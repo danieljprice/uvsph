@@ -61,7 +61,6 @@ print(uvimg.min(),uvimg.max())
 
 # perform the operation
 img = uv_to_image(c)
-print(img.shape,img.dtype)
 
 # plot the interpolated uv plane and the image plane side by side
 fig.add_subplot(1,2,2)
