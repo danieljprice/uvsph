@@ -37,27 +37,26 @@ program uvsph
  umax = 4000.
  hfac = 50. ! h = hfac*(1/n)^0.5, where n = points per pixel^2
 
-! step 5: interpolate visibilities to the set of pixels
- allocate(mask(npts))
- mask = 1
-!
+! step 4: interpolate visibilities to the set of pixels
 ! in my first attempts at uv-plane interpolation, I just used a
 ! smoothing length per point h(r) = max(0.15*r,20.), where r=sqrt(u^2 + v^2)
 ! In the following routines, we compute the local point density
 ! in the uv plane and use this to set the smoothing length
 !
+ allocate(mask(npts))
+ mask = 1
  call interpolate2D_pixels(u,v,mask,npts, &
       umin,umin,umax,umax,image_real,nx,nx,&
       normalise=.true.,adaptive=.true.,dat=re,datpix2=rho,fac=hfac)
- ! check total "mass" is conserved by the interpolation, i.e. number of points
- print*,' total number of points is ',sum(rho)
-
  call interpolate2D_pixels(u,v,mask,npts, &
       umin,umin,umax,umax,image_im,nx,nx,&
       normalise=.true.,adaptive=.true.,dat=im,fac=hfac)
  deallocate(mask)
 
-! step 6: write interpolated uv-plane images to file
+ ! check total "mass" is conserved by the interpolation, i.e. number of points
+ print*,' total number of points is ',sum(rho)
+
+! step 5: write interpolated uv-plane images to file
  call write_pix('uv-img-re.pix',image_real,nx,nx,umin,umin,umax,umax)
  call write_pix('uv-img-im.pix',image_im,nx,nx,umin,umin,umax,umax)
  call write_pix('rho.pix',rho,nx,nx,umin,umin,umax,umax)
