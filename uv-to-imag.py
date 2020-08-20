@@ -5,7 +5,6 @@
 #
 import numpy as np
 import matplotlib.pyplot as plt
-import os
 
 def read_pix( file ):
     array = np.loadtxt(file,skiprows=9)
@@ -56,7 +55,7 @@ fig = plt.figure(figsize=(12,6))
 fig.suptitle('uv plane and channel map - '+job)
 fig.add_subplot(1,2,1)
 uvimg = np.log(np.abs(c))
-plt.imshow(c.imag,cmap='inferno',interpolation='nearest',vmax=1.25,vmin=-1.)
+plt.imshow(c.imag,cmap='inferno',vmax=1.25,vmin=-1.)
 print(uvimg.min(),uvimg.max())
 
 # perform the operation
@@ -65,7 +64,7 @@ img = uv_to_image(c)
 # plot the interpolated uv plane and the image plane side by side
 fig.add_subplot(1,2,2)
 plt.imshow(img,cmap='inferno',vmax=0.0015)
-print(img.max())
+print('max intensity is ',img.max())
 plt.savefig(prefix+'.pdf')
 plt.savefig(prefix+'.png')
 plt.show()
