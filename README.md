@@ -8,10 +8,8 @@ Install
 To install and compile the code, use::
 
 ```
-git clone https://github.com/danieljprice/splash
-git clone https://github.com/danieljprice/uvsph
+git clone --recurse-submodules https://github.com/danieljprice/uvsph
 cd uvsph
-export SPLASH_DIR=../splash
 make
 ```
 

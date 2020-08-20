@@ -9,6 +9,13 @@ SPLASH_FILES=asciiutils.f90 timing.f90 kernels.f90 interpolation.f90 interpolate
 #
 SRC=${SPLASH_FILES} read_uv.f90 uvsph.f90
 OBJ=${SRC:.f90=.o}
+#
+# set directory to find splash source files
+# by default we assume splash exists as a subdirectory
+#
+#ifndef SPLASH_DIR
+SPLASH_DIR=./splash
+#endif
 
 VPATH=${SPLASH_DIR}/src
 
