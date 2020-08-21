@@ -34,4 +34,12 @@ Currently the file format is assumed to be a simple ascii file with the followin
 
 i.e. where u and v points are in columns 1 and 2, and the real and imaginary visibility data is in columns 5 and 6
 
-Daniel Price (2020)
+Examples
+--------
+PDS 70 single channel imaged with uvsph (left) compared to the image produced by CLEAN (right), image on the right courtesy of Christophe Pinte:
+
+<img width="684" alt="pds70-comparison" src="https://user-images.githubusercontent.com/12252103/90853029-666d0900-e3bc-11ea-9919-1ea7318861f9.png">
+
+Copyright
+---------
+(c) Daniel Price (2020)
