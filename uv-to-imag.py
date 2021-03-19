@@ -63,7 +63,7 @@ img = uv_to_image(c)
 
 # plot the interpolated uv plane and the image plane side by side
 fig.add_subplot(1,2,2)
-plt.imshow(img,cmap='inferno',vmax=0.0015)
+plt.imshow(img,cmap='inferno',vmax=img.max())
 print('max intensity is ',img.max())
 plt.savefig(prefix+'.pdf')
 plt.savefig(prefix+'.png')
@@ -71,7 +71,11 @@ plt.show()
 
 # plot just the image, in a large format
 fig = plt.figure(figsize=(12,12))
-plt.imshow(img,cmap='inferno',interpolation='gaussian',vmax=0.0015)
+vmin=0.
+vmax=2.e-4
+vmax=img.max()
+plt.imshow(img,cmap='inferno',interpolation='gaussian',vmin=vmin,vmax=vmax)
+plt.savefig('uvsph.png')
 plt.show()
 
 # write fits
