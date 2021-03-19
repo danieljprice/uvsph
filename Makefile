@@ -1,9 +1,10 @@
 FC=gfortran
-FFLAGS=-O3
+FFLAGS=-O3 #-fcheck=all
 #
 # the following files come from splash
 #
-SPLASH_FILES=asciiutils.f90 timing.f90 kernels.f90 interpolation.f90 interpolate2D.f90
+SPLASH_FILES=asciiutils.f90 timing.f90 system_utils.f90 \
+             kernels.f90 interpolation.f90 interpolate2D.f90
 #
 # here are the files unique to uvsph
 #
