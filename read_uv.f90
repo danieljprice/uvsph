@@ -10,8 +10,9 @@ subroutine read_uv_data(filename,npts,u,v,re,im,ierr)
  character(len=*), intent(in) :: filename
  integer, intent(out) :: npts,ierr
  real,    intent(out), allocatable :: u(:),v(:),re(:),im(:)
- integer :: iu,i
+ integer :: iu,i,j,npts_orig
  real :: dum,umin,umax,vmin,vmax
+ logical, parameter :: hermitian=.true.
 
  ! open file
  open(newunit=iu,file=filename,status='old',form='formatted',iostat=ierr)
@@ -34,6 +35,8 @@ subroutine read_uv_data(filename,npts,u,v,re,im,ierr)
  npts = npts - 1
  print*,' got npts = ',npts
 
+ npts_orig = npts
+ if (hermitian) npts = 2*npts_orig
  ! allocate memory
  allocate(u(npts),v(npts),re(npts),im(npts))
  rewind(iu)
@@ -43,10 +46,20 @@ subroutine read_uv_data(filename,npts,u,v,re,im,ierr)
 
  ! read the data
  print*,' reading data'
- do i=1,npts
+ do i=1,npts_orig
     read(iu,*) u(i),v(i),dum,dum,re(i),im(i)
  enddo
  close(iu)
+
+ if (hermitian) then
+    print*,'hermitian fill-in ->',npts,' points'
+    do i=1,npts_orig
+       u(npts_orig+i) = -u(i)
+       v(npts_orig+i) = -v(i)
+       re(npts_orig+i) = re(i)
+       im(npts_orig+i) = -im(i)
+    enddo
+ endif
 
  umin = minval(u)
  umax = maxval(u)
