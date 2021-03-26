@@ -6,13 +6,13 @@ module readuv
 
 contains
 
-subroutine read_uv_data(filename,npts,u,v,re,im,ierr)
+subroutine read_uv_data(filename,npts,u,v,re,im,weights,ierr)
  character(len=*), intent(in) :: filename
  integer, intent(out) :: npts,ierr
- real,    intent(out), allocatable :: u(:),v(:),re(:),im(:)
+ real,    intent(out), allocatable :: u(:),v(:),re(:),im(:),weights(:)
  integer :: iu,i,j,npts_orig
  real :: dum,umin,umax,vmin,vmax
- logical, parameter :: hermitian=.true.
+ logical, parameter :: hermitian=.false.
 
  ! open file
  open(newunit=iu,file=filename,status='old',form='formatted',iostat=ierr)
@@ -38,7 +38,7 @@ subroutine read_uv_data(filename,npts,u,v,re,im,ierr)
  npts_orig = npts
  if (hermitian) npts = 2*npts_orig
  ! allocate memory
- allocate(u(npts),v(npts),re(npts),im(npts))
+ allocate(u(npts),v(npts),re(npts),im(npts),weights(npts))
  rewind(iu)
  do i=1,2
     read(iu,*,iostat=ierr)
@@ -47,7 +47,7 @@ subroutine read_uv_data(filename,npts,u,v,re,im,ierr)
  ! read the data
  print*,' reading data'
  do i=1,npts_orig
-    read(iu,*) u(i),v(i),dum,dum,re(i),im(i)
+    read(iu,*) u(i),v(i),dum,dum,re(i),im(i),weights(i)
  enddo
  close(iu)
 
@@ -58,6 +58,7 @@ subroutine read_uv_data(filename,npts,u,v,re,im,ierr)
        v(npts_orig+i) = -v(i)
        re(npts_orig+i) = re(i)
        im(npts_orig+i) = -im(i)
+       weights(npts_orig+i) = weights(i)
     enddo
  endif
 

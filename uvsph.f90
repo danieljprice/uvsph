@@ -9,7 +9,7 @@ program uvsph
  integer, parameter :: nx = 512
  integer :: npts,ierr,i,nargs
  integer, allocatable :: mask(:)
- real, allocatable :: u(:),v(:),re(:),im(:)
+ real, allocatable :: u(:),v(:),re(:),im(:),weights(:)
  real :: image_real(nx,nx),image_im(nx,nx),rho(nx,nx)
  real :: r2,uvtaper,hfac,umin,umax,points_per_beam
  character(len=120) :: uvfile,string
@@ -35,7 +35,7 @@ program uvsph
  enddo
 
 ! step 1: read uv data from file
- call read_uv_data(uvfile,npts,u,v,re,im,ierr)
+ call read_uv_data(uvfile,npts,u,v,re,im,weights,ierr)
 
 ! step 2: set up the uv grid
  umax = (int(max(-minval(u),maxval(u),-minval(v),maxval(v)))/1000 + 1)*1000.
