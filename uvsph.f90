@@ -11,7 +11,7 @@ program uvsph
  integer, allocatable :: mask(:)
  real, allocatable :: u(:),v(:),re(:),im(:),weights(:)
  real :: image_real(nx,nx),image_im(nx,nx),rho(nx,nx),psf(nx,nx)
- real :: r2,uvtaper,hfac,umin,umax,points_per_beam,du,taper,ui,vi
+ real :: r2,uvtaper,hfac,umin,umax,points_per_beam,du,taper,ui,vi,wsum
  character(len=120) :: uvfile,string
  logical :: adaptive,get_psf
  real, parameter :: pi = 4.*atan(1.)
@@ -52,16 +52,21 @@ program uvsph
  hfac = get_command_option('hfac',30.)
  print*,' beam size / uv spacing = ',hfac,' uv points per beam = ',pi*(2.*hfac)**2
 
-! step 3: apply uv taper
- uvtaper = get_command_option('uvtaper',umax/4.)
- print*,' applying uv taper with lam=',uvtaper, ' or t=',uvtaper/206265.,' arcsec'
- do i=1,npts
-    ! apply uv taper
-    r2 = u(i)**2 + v(i)**2
-    taper = exp(-r2/(2.*uvtaper**2))
-    re(i) = re(i)*taper
-    im(i) = im(i)*taper
- enddo
+! ! step 3: apply uv taper
+  uvtaper = get_command_option('uvtaper',umax/4.)
+  if (uvtaper > 0.) print*,' applying uv taper with lam=',uvtaper, ' or t=',uvtaper/206265.,' arcsec'
+!  do i=1,npts
+!     ! apply uv taper
+!     r2 = u(i)**2 + v(i)**2
+!     taper = exp(-r2/(2.*uvtaper**2))
+!     re(i) = re(i)*taper
+!     im(i) = im(i)*taper
+!  enddo
+
+! normalise weights
+ wsum = sum(weights)
+ weights = weights*npts/wsum
+ print*,' sum of weights was ',wsum,' normalised to ',sum(weights)
 
 ! step 4: interpolate visibilities to the set of pixels
 ! In the following routines, we compute the local point density
@@ -71,35 +76,37 @@ program uvsph
  mask = 1
  call interpolate2D_pixels(u,v,mask,npts, &
       umin,umin,umax,umax,image_real,nx,nx,&
-      normalise=.true.,adaptive=adaptive,dat=re,datpix2=rho,fac=hfac)
+      normalise=.true.,adaptive=adaptive,dat=re,datpix2=rho,fac=hfac,weights=weights)
  ! check total "mass" is conserved by the interpolation, i.e. number of points
  print*,' number of points (integral of number density) is ',sum(rho),' should be ',npts
 
  call interpolate2D_pixels(u,v,mask,npts, &
       umin,umin,umax,umax,image_im,nx,nx,&
-      normalise=.true.,adaptive=adaptive,dat=im,datpix2=rho,fac=hfac)
+      normalise=.true.,adaptive=adaptive,dat=im,datpix2=rho,fac=hfac,weights=weights)
 
  if (get_psf) then
     re = 1.0
     call interpolate2D_pixels(u,v,mask,npts, &
          umin,umin,umax,umax,psf,nx,nx,&
-         normalise=.true.,adaptive=adaptive,dat=re,datpix2=rho,fac=hfac)
+         normalise=.true.,adaptive=adaptive,dat=re,datpix2=rho,fac=hfac,weights=weights)
  endif
  deallocate(mask)
 
 ! reapply uv taper in interpolated image
- du = (umax-umin)/nx
- do j=1,nx
-    vi = umin + (j-0.5)*du
-    do i=1,nx
-       ui = umin + (i-0.5)*du
-       r2 = ui*ui + vi*vi
-       taper = exp(-r2/(2.*uvtaper**2))
-       image_real(i,j) = image_real(i,j)*taper
-       image_im(i,j) = image_im(i,j)*taper
-       psf(i,j) = psf(i,j)*taper
+ if (uvtaper > 0.) then
+    du = (umax-umin)/nx
+    do j=1,nx
+       vi = umin + (j-0.5)*du
+       do i=1,nx
+          ui = umin + (i-0.5)*du
+          r2 = ui*ui + vi*vi
+          taper = exp(-r2/(2.*uvtaper**2))
+          image_real(i,j) = image_real(i,j)*taper
+          image_im(i,j) = image_im(i,j)*taper
+          psf(i,j) = psf(i,j)*taper
+       enddo
     enddo
- enddo
+ endif
 
 ! step 5: write interpolated uv-plane images to file
  call write_pix('uv-img-re.pix',image_real,nx,nx,umin,umin,umax,umax)
