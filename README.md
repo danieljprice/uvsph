@@ -28,6 +28,15 @@ To run the code, use::
 python uv-to-imag.py
 ```
 
+Advanced usage
+--------------
+Code parameters can be specified with flags::
+``
+uvsph --hfac=10 --uvtaper=1000 PDS70_1channel.txt
+```
+the main two parameters are the `hfac' specifying the beam size in units of the uv pixel spacing, and the uvtaper.
+The uvtaper specifies the standard deviation (in u,v coordinates) of a Gaussian weighting applied to the visibility data.
+
 UV data format
 --------------
 Currently the file format is assumed to be a simple ascii file with the following format::
@@ -43,4 +52,4 @@ i.e. where u and v points are in columns 1 and 2, and the real and imaginary vis
 
 Copyright
 ---------
-(c) Daniel Price (2020)
+(c) Daniel Price (2020-2021)
