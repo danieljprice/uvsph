@@ -7,12 +7,13 @@ module readuv
 contains
 
 subroutine read_uv_data(filename,npts,u,v,re,im,weights,ierr)
+ use asciiutils, only:get_ncolumns
  character(len=*), intent(in) :: filename
  integer, intent(out) :: npts,ierr
  real,    intent(out), allocatable :: u(:),v(:),re(:),im(:),weights(:)
- integer :: iu,i,j,npts_orig
+ integer :: iu,i,j,npts_orig,nheader,ncols
  real :: dum,umin,umax,vmin,vmax
- logical, parameter :: hermitian=.false.
+ logical, parameter :: hermitian=.true.
 
  ! open file
  open(newunit=iu,file=filename,status='old',form='formatted',iostat=ierr)
@@ -21,8 +22,10 @@ subroutine read_uv_data(filename,npts,u,v,re,im,weights,ierr)
     return
  endif
 
+ call get_ncolumns(iu,ncols,nheader)
+
  ! skip header lines
- do i=1,2
+ do i=1,nheader
     read(iu,*,iostat=ierr)
  enddo
 
@@ -33,22 +36,28 @@ subroutine read_uv_data(filename,npts,u,v,re,im,weights,ierr)
     npts = npts + 1
  enddo
  npts = npts - 1
- print*,' got npts = ',npts
+ print*,' got npts = ',npts,' header lines=',nheader,' columns=',ncols
 
  npts_orig = npts
  if (hermitian) npts = 2*npts_orig
  ! allocate memory
  allocate(u(npts),v(npts),re(npts),im(npts),weights(npts))
  rewind(iu)
- do i=1,2
+ do i=1,nheader
     read(iu,*,iostat=ierr)
  enddo
 
  ! read the data
  print*,' reading data'
- do i=1,npts_orig
-    read(iu,*) u(i),v(i),dum,dum,re(i),im(i),weights(i)
- enddo
+ if (ncols==6) then
+    do i=1,npts_orig
+       read(iu,*) u(i),v(i),dum,re(i),im(i),weights(i)
+    enddo
+ else
+    do i=1,npts_orig
+       read(iu,*) u(i),v(i),dum,dum,re(i),im(i),weights(i)
+    enddo
+ endif
  close(iu)
 
  if (hermitian) then
