@@ -31,10 +31,10 @@ python uv-to-imag.py
 Advanced usage
 --------------
 Code parameters can be specified with flags::
-``
+```
 uvsph --hfac=10 --uvtaper=1000 PDS70_1channel.txt
 ```
-the main two parameters are the `hfac' specifying the beam size in units of the uv pixel spacing, and the uvtaper.
+the main two parameters are ``hfac``, specifying the beam size in units of the uv pixel spacing, and ``uvtaper``.
 The uvtaper specifies the standard deviation (in u,v coordinates) of a Gaussian weighting applied to the visibility data.
 
 UV data format
